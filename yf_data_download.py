@@ -1,14 +1,22 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Feb 20 08:59:07 2023
-@author: pastor&benji
-"""
+###############################################################################
+###############################################################################
 import pandas as pd
 import numpy as np
 import yfinance as yf
 from datetime import datetime, timedelta
 import matplotlib
 import matplotlib.pyplot as plt
+
+import os
+os.getcwd() #know your work directory
+# os.chdir('./') #set your work directory, e.g. C:/Users/c0000000
+os.chdir('/Users/ehabriaz/Desktop/pytonbacktest')
+
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+
 
 def merge_data(file1,file2):
     #read file1 and file2 as dataframe; merge to df
@@ -24,45 +32,63 @@ def merge_data(file1,file2):
     
     return df
 
-
-# #take a look at the data types
-# type(df.index)
-# df.dtypes
-# print(df[0:5])
-
-# ''' download and merge your data'''
-# df = yf.download(tickers='AMZN', start=datetime(2023,4,3), end=datetime(2023,4,10), interval="1m")
-# df.to_csv('AMZN_1m_1.csv') 
-# df2 = yf.download(tickers='AMZN', start=datetime(2023,3,26), end=datetime(2023,4,2), interval="1m")
-# df2.to_csv('AMZN_1m_2.csv')
-# df3 = yf.download(tickers='AMZN', start=datetime(2023,3,18), end=datetime(2023,3,25), interval="1m")
-# df3.to_csv('AMZN_1m_3.csv')
-# df4 = yf.download(tickers='AMZN', start=datetime(2023,3,13), end=datetime(2023,3,17), interval="1m")
-# df4.to_csv('AMZN_1m_4.csv')
+###############################################################################
+###############################################################################
 
 
-df = yf.download(tickers='AMZN', start=datetime(2023,4,5), end=datetime(2023,4,11), interval="1m").resample('1T').ffill().head(1950)
-df.to_csv('AMZN_1m_1.csv') 
-df2 = yf.download(tickers='AMZN', start=datetime(2023,3,30), end=datetime(2023,4,5), interval="1m").resample('1T').ffill().head(1950)
-df2.to_csv('AMZN_1m_2.csv')
-df3 = yf.download(tickers='AMZN', start=datetime(2023,3,22), end=datetime(2023,3,29), interval="1m").resample('1T').ffill().head(1950)
-df3.to_csv('AMZN_1m_3.csv')
-df4 = yf.download(tickers='AMZN', start=datetime(2023,3,17), end=datetime(2023,3,21), interval="1m").resample('1T').ffill().head(1950)
-df4.to_csv('AMZN_1m_4.csv')
+###############################################################################
+###############################################################################
+tickerSymbol = 'AMZN'
+start_date = datetime(2023, 4, 17) ###########MODIFY PER DAY
+end_date = datetime(2023, 5, 15)  ###########MODIFY PER DAY
+interval = "1m"
+###############################################################################
+###############################################################################
 
+###############################################################################
+###############################################################################
+delta = timedelta(days=7)
+count = 1
 
+while start_date < end_date:
+    # Download data for a 7-day period
+    temp_end_date = min(start_date + delta, end_date)
+    df = yf.download(tickers=tickerSymbol, start=start_date, end=temp_end_date, interval=interval)
+    # df = df.resample('1T').ffill().head(1950)
+    
+    
+    # Save the data to a CSV file
+    tickerDataSTR = f"AMZN_1m_{count}.csv"
+    df.to_csv(tickerDataSTR)
+    
+    # Update start date and count
+    start_date += delta
+    count += 1
+###############################################################################
+###############################################################################
 
+###############################################################################
+###############################################################################
+df1 = pd.read_csv('AMZN_1m_1.csv', index_col='Datetime', parse_dates=['Datetime'])
+df2 = pd.read_csv('AMZN_1m_2.csv', index_col='Datetime', parse_dates=['Datetime'])
+df3 = pd.read_csv('AMZN_1m_3.csv', index_col='Datetime', parse_dates=['Datetime'])
+df4 = pd.read_csv('AMZN_1m_4.csv', index_col='Datetime', parse_dates=['Datetime'])
 
-
-#merge the two dataset
 df_12 = merge_data('AMZN_1m_1.csv','AMZN_1m_2.csv')
 df_12.to_csv('first_merge.csv')
+
 df_22 = merge_data('AMZN_1m_3.csv','AMZN_1m_4.csv')
 df_22.to_csv('second_merge.csv')
+
 month_df = merge_data('first_merge.csv','second_merge.csv')
-month_df.to_csv('Amzn_13-11_March-April')
+month_df.to_csv('Amzn_13-11_lastMonth.csv')
+###############################################################################
+###############################################################################
 
-
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
 
 # Plot the close price of the AAPL
 month_df['Adj Close'].plot()
