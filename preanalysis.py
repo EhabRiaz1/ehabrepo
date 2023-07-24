@@ -1,17 +1,19 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Mar 10 12:42:19 2023
-
-@author: pastor&benji
-"""
+###############################################################################
+###############################################################################
 import pandas as pd
 import numpy as np
+from yf_data_download import month_df
 
 import os
 os.getcwd() #know your work directory
 # os.chdir('./') #set your work directory, e.g. C:/Users/c0000000
 os.chdir('/Users/ehabriaz/Desktop/pytonbacktest')
 
+###############################################################################
+###############################################################################
+
+###############################################################################
+###############################################################################
 def transform(x,freq='1min',usecol='Adj Close'):
     # transform the original data to nxm
     # n is the number of trading days
@@ -30,43 +32,42 @@ def transform(x,freq='1min',usecol='Adj Close'):
             x_mat.loc[d,day1_x.index.time] = day1_x.values
     x_mat.dropna(how='all',inplace=True)
     return x_mat
-
-X = transform(month_df, freq='1min', usecol='Adj Close')
-
-
+###############################################################################
+###############################################################################
 
 
-def fill_missing_dat(x):
+###############################################################################
+###############################################################################
+def fill_missing_dat(filledData):
     
     #Forward fill missing values 
-    x.fillna(method = 'ffill', inplace = True )
+    filledData.fillna(method = 'ffill', inplace = True )
     
     #backward fill missing values 
-    x.fillna(method = 'bfill', inplace = True)
+    filledData.fillna(method = 'bfill', inplace = True)
     
     #Linearly interpolate an missing values
-    x.interpolate(method='linear', limit_direction='both', inplace=True)
+    filledData.interpolate(method='linear', limit_direction='both', inplace=True)
     
-    return x
+    return filledData
+###############################################################################
+###############################################################################
 
-dffilled = fill_missing_dat(df)
-
-dat = pd.read_csv('Amzn_13-11_March-April',parse_dates=['Datetime'],index_col='Datetime')
+dat = pd.read_csv('Amzn_13-11_lastMonth.csv',parse_dates=['Datetime'],index_col='Datetime')
 ret = np.diff(np.log(month_df['Adj Close'])) #log-returns
 dat.shape[0] #number of observations. Is it correct?
 m = 6.5*60 #number of 1-min volumes per day
 ''' Transfer to daily data table '''
-trans_dat = transform(dat) #we will use this data frame to run backtest of technical trading strategies
 
 ''' Some intraday data properties'''
 # Find return table
-ret_mat = ???
-# Find intraday volume table
-volume_mat = ???
+# ret_mat = ???
+# # Find intraday volume table
+# volume_mat = ???
 
-''' Some plots '''
-from matplotlib import pyplot as plt
-plt.plot(volume_mat.mean(axis=0).values)
+# ''' Some plots '''
+# from matplotlib import pyplot as plt
+# plt.plot(volume_mat.mean(axis=0).values)
 
 
 
